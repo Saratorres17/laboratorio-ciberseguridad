@@ -143,4 +143,4 @@ https://github.com/Saratorres17/laboratorio-ciberseguridad
 ---
 
 *Laboratorio de Ciberseguridad — Detección y Respuesta ante Incidentes (MTTD / MTTR).*
-<img width="662" height="191" alt="image" src="https://github.com/user-attachments/assets/f1a64312-a7b4-4c20-abe4-b537565ee880" />
+<img width="2170" height="725" alt="06bc37cc-baa5-439b-8a5f-201f265672eb" src="https://github.com/user-attachments/assets/68e3203d-36da-4008-a60d-285e1e45f47e" />

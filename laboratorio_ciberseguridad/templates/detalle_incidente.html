@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Detalle del incidente{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+  <header class="dashboard-header"><div><span class="eyebrow">INCIDENTE #{{ incidente.id }}</span><h1>{{ incidente.tipo }}</h1><p>Usuario afectado: {{ incidente.usuario }}</p></div><a class="small-button" href="{{ url_for('incidentes') }}">Volver al dashboard</a></header>
+  <section class="stats-grid">
+    <article class="stat-card"><span>Estado</span><strong class="detail-value">{{ incidente.estado }}</strong></article>
+    <article class="stat-card"><span>Severidad</span><strong class="detail-value">{{ incidente.severidad }}</strong></article>
+    <article class="stat-card"><span>MTTD</span><strong class="detail-value">{{ "%.2f"|format(incidente.mttd) if incidente.mttd is not none else "—" }} s</strong></article>
+    <article class="stat-card"><span>MTTR</span><strong class="detail-value">{{ "%.2f"|format(incidente.mttr) if incidente.mttr is not none else "—" }} s</strong></article>
+  </section>
+  <section class="detail-panel"><h2>Clasificación y asignación</h2>
+    <form method="POST" action="{{ url_for('actualizar_incidente', id=incidente.id) }}" class="advanced-form">
+      <label>Severidad<select name="severidad"><option {% if incidente.severidad=='Crítica' %}selected{% endif %}>Crítica</option><option {% if incidente.severidad=='Alta' %}selected{% endif %}>Alta</option><option {% if incidente.severidad=='Media' %}selected{% endif %}>Media</option><option {% if incidente.severidad=='Baja' %}selected{% endif %}>Baja</option></select></label>
+      <label>Analista responsable<input name="analista" value="{{ incidente.analista or session.usuario }}"></label>
+      <label>Descripción<textarea name="descripcion" rows="4">{{ incidente.descripcion or '' }}</textarea></label><button>Guardar información</button>
+    </form>
+  </section>
+  <section class="detail-panel"><h2>Registrar acción y evidencia</h2>
+    <form method="POST" action="{{ url_for('registrar_accion', id=incidente.id) }}" class="advanced-form">
+      <label>Acción realizada<textarea name="accion" rows="3" required></textarea></label>
+      <label>Evidencia u observaciones<textarea name="evidencia" rows="3"></textarea></label><button>Registrar acción</button>
+    </form>
+  </section>
+  <section class="detail-panel"><h2>Bitácora de actividades</h2>
+    {% for a in acciones %}<article class="history-item"><strong>{{ a.accion }}</strong><span>{{ a.fecha }} · {{ a.analista }}</span><p>{{ a.evidencia }}</p></article>{% else %}<p class="muted">No hay acciones registradas.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

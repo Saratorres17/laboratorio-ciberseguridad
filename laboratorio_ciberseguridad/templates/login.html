@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Inicio de sesión{% endblock %}
+{% block content %}
+<main class="auth-card">
+  <span class="eyebrow">CYBERSECURITY MONITORING</span>
+  <h1>Iniciar sesión</h1>
+  <p>Acceso al Centro de Operaciones de Seguridad.</p>
+  <form method="POST">
+    <label>Usuario</label><input name="usuario" required autocomplete="username">
+    <label>Contraseña</label><input type="password" name="password" required autocomplete="current-password">
+    <button type="submit">Ingresar</button>
+  </form>
+  <p>¿No tienes cuenta? <a href="{{ url_for('registro') }}">Regístrate</a></p>
+</main>
+{% endblock %}

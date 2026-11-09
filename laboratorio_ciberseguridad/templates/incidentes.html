@@ -1,0 +1,320 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard SOC{% endblock %}
+
+{% block head %}
+<meta http-equiv="refresh" content="5">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-shell">
+
+  <header class="dashboard-header">
+    <div>
+      <span class="eyebrow">CYBERSECURITY MONITORING</span>
+      <h1>Centro de Operaciones de Seguridad</h1>
+      <p>Panel de monitoreo y gestión de incidentes de ciberseguridad</p>
+    </div>
+
+    <div class="user-actions">
+      Sistema activo · {{ session.usuario }} ·
+      <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    </div>
+  </header>
+
+  <!-- Estadísticas generales -->
+  <section class="stats-grid">
+
+    <article class="stat-card">
+      <span>Total de incidentes</span>
+      <strong>{{ total }}</strong>
+      <small>Registros en el sistema</small>
+    </article>
+
+    <article class="stat-card">
+      <span>Detectados</span>
+      <strong>{{ detectados }}</strong>
+      <small>Requieren atención</small>
+    </article>
+
+    <article class="stat-card">
+      <span>En atención</span>
+      <strong>{{ atencion }}</strong>
+      <small>En proceso</small>
+    </article>
+
+    <article class="stat-card">
+      <span>Resueltos</span>
+      <strong>{{ resueltos }}</strong>
+      <small>Incidentes finalizados</small>
+    </article>
+
+  </section>
+
+  <!-- Métricas MTTD y MTTR -->
+  <section class="metricas-resumen">
+
+    <article class="metrica-box">
+      <span>Promedio MTTD</span>
+      <h2>{{ "%.2f"|format(mttd) }} s</h2>
+      <p>Tiempo promedio desde el primer evento hasta la detección</p>
+    </article>
+
+    <article class="metrica-box">
+      <span>Promedio MTTR</span>
+      <h2>{{ "%.2f"|format(mttr) }} s</h2>
+      <p>Tiempo promedio desde la detección hasta la respuesta</p>
+    </article>
+
+  </section>
+
+  <!-- Gráficos -->
+  <section class="charts-grid">
+
+    <article class="chart-card">
+      <h3>Distribución de incidentes</h3>
+      <p>Incidentes según su estado</p>
+
+      <div class="chart-container">
+        <canvas id="estadoChart"></canvas>
+      </div>
+    </article>
+
+    <article class="chart-card">
+      <h3>Comparación MTTD vs MTTR</h3>
+      <p>Promedios en segundos</p>
+
+      <div class="chart-container">
+        <canvas id="tiemposChart"></canvas>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Tabla de incidentes -->
+  <section class="table-section">
+
+    <div class="section-heading">
+      <div>
+        <h2>Registro de incidentes</h2>
+        <p>Consulta y administra los incidentes detectados.</p>
+      </div>
+
+      <span class="records-count">{{ total }} registros</span>
+    </div>
+
+    <div class="table-scroll">
+
+      <table class="incident-table">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Usuario</th>
+            <th>Detección</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>MTTD</th>
+            <th>MTTR</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for i in incidentes %}
+
+          <tr>
+
+            <td class="incident-id">#{{ i.id }}</td>
+
+            <td>{{ i.tipo }}</td>
+
+            <td>{{ i.usuario }}</td>
+
+            <td>{{ i.fecha_deteccion }}</td>
+
+            <td>{{ i.severidad }}</td>
+
+            <td>
+              <span class="status-badge {{ 'resolved' if i.estado == 'Resuelto' else ('progress' if i.estado == 'En atención' else 'detected') }}">
+                {{ i.estado }}
+              </span>
+            </td>
+
+            <td>
+              {{ "%.2f"|format(i.mttd) if i.mttd is not none else "—" }}
+            </td>
+
+            <td>
+              {{ "%.2f"|format(i.mttr) if i.mttr is not none else "—" }}
+            </td>
+
+            <td>
+
+              <a class="small-button"
+                 href="{{ url_for('detalle_incidente', id=i.id) }}">
+                Ver detalle
+              </a>
+
+              {% if i.estado == 'Detectado' %}
+
+              <form class="inline-form"
+                    method="POST"
+                    action="{{ url_for('atender_incidente', id=i.id) }}">
+
+                <button class="small-button blue" type="submit">
+                  Atender
+                </button>
+
+              </form>
+
+              {% elif i.estado == 'En atención' %}
+
+              <form class="inline-form"
+                    method="POST"
+                    action="{{ url_for('resolver_incidente', id=i.id) }}">
+
+                <button class="small-button green" type="submit">
+                  Resolver
+                </button>
+
+              </form>
+
+              {% endif %}
+
+            </td>
+
+          </tr>
+
+          {% else %}
+
+          <tr>
+            <td colspan="9" class="empty-table">
+              Todavía no hay incidentes. Genera tres intentos fallidos y ejecuta detector.py.
+            </td>
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+  <!-- Pie de página -->
+  <footer class="dashboard-footer">
+    <span>Laboratorio académico de ciberseguridad</span>
+    <span>Flask · SQLite · MTTD · MTTR</span>
+  </footer>
+
+</div>
+
+<!-- Gráfico de distribución -->
+<script>
+
+new Chart(document.getElementById('estadoChart'), {
+
+  type: 'doughnut',
+
+  data: {
+    labels: ['Detectados', 'En atención', 'Resueltos'],
+
+    datasets: [{
+      data: [
+        {{ detectados }},
+        {{ atencion }},
+        {{ resueltos }}
+      ],
+
+      backgroundColor: [
+        '#ff7185',
+        '#ffbd66',
+        '#39d99a'
+      ],
+
+      borderWidth: 0
+    }]
+  },
+
+  options: {
+    maintainAspectRatio: false,
+
+    plugins: {
+      legend: {
+        labels: {
+          color: '#d8e4f0'
+        }
+      }
+    }
+  }
+
+});
+
+</script>
+
+<!-- Gráfico MTTD vs MTTR -->
+<script>
+
+new Chart(document.getElementById('tiemposChart'), {
+
+  type: 'bar',
+
+  data: {
+    labels: ['MTTD', 'MTTR'],
+
+    datasets: [{
+      label: 'Segundos',
+
+      data: [
+        {{ mttd }},
+        {{ mttr }}
+      ],
+
+      backgroundColor: [
+        '#55c9f2',
+        '#39d99a'
+      ],
+
+      borderRadius: 8
+    }]
+  },
+
+  options: {
+    maintainAspectRatio: false,
+
+    scales: {
+      x: {
+        ticks: {
+          color: '#d8e4f0'
+        }
+      },
+
+      y: {
+        beginAtZero: true,
+
+        ticks: {
+          color: '#d8e4f0'
+        }
+      }
+    },
+
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,127 +1,27 @@
-# 🛡️ Laboratorio de Ciberseguridad — Flask, SQLite, MTTD y MTTR
+# Laboratorio: Código Seguro y Modelo OWASP
 
-Sistema web académico para la detección y respuesta ante incidentes de seguridad informática, desarrollado con Python, Flask y SQLite.
+## 1. Datos generales
 
-El laboratorio permite registrar usuarios, monitorear eventos de autenticación, detectar posibles ataques de fuerza bruta, simular el bloqueo de cuentas y gestionar incidentes de seguridad mediante indicadores MTTD y MTTR.
+- **Nombre completo:** Sara Yamileth Torres Henríquez
+- **Carné:** TSU-C001
+- **Correo electrónico:** sara.torres2710@gmail.com
+- **Asignatura:** Lenguajes de Programación con Aspectos de Seguridad
+- **Fecha:** 8 de noviembre de 2026
 
-## 📋 Requisitos
+## 2. Descripción
 
-- Python 3.10 o superior.
-- Windows, macOS o Linux.
-- Conexión a Internet para cargar Chart.js en el dashboard.
-- Visual Studio Code (recomendado).
+Este laboratorio consiste en desarrollar una aplicación web utilizando Python y Flask, implementando controles básicos de seguridad basados en buenas prácticas y el modelo OWASP.
 
-## ⚙️ Instalación en Windows PowerShell
+La aplicación incorpora mecanismos de validación de entradas, consultas parametrizadas a una base de datos SQLite, protección de contraseñas mediante funciones de hash, registro de eventos de autenticación y detección de incidentes de seguridad.
 
-Abre PowerShell dentro de la carpeta del proyecto y ejecuta los siguientes comandos:
+Además, permite identificar múltiples intentos fallidos de inicio de sesión, generar incidentes de seguridad, bloquear usuarios involucrados y registrar acciones de respuesta.
 
-**1. Crear el entorno virtual**
+El sistema también permite calcular las métricas de seguridad MTTD y MTTR:
 
-```powershell
-py -m venv venv
-```
+- **MTTD (Mean Time To Detect):** mide el tiempo transcurrido desde que ocurre un evento de seguridad hasta que es detectado.
+- **MTTR (Mean Time To Respond/Resolve):** mide el tiempo transcurrido desde la detección o atención del incidente hasta su resolución.
 
-**2. Activar el entorno virtual**
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-**3. Instalar las dependencias**
-
-```powershell
-pip install -r requirements.txt
-```
-
-**4. Crear la base de datos**
-
-```powershell
-python crearDB.py
-```
-
-**5. Ejecutar la aplicación**
-
-```powershell
-python app.py
-```
-
-Abre el navegador en:
-
-http://127.0.0.1:5000/registro
-
-Registra un usuario y posteriormente inicia sesión.
-
-### Solución a problemas de ejecución en PowerShell
-
-Si PowerShell impide activar el entorno virtual, ejecuta:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
-
-Después vuelve a activar el entorno:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-## 🔍 Prueba de detección y respuesta
-
-Para comprobar el funcionamiento del laboratorio, realiza el siguiente escenario:
-
-1. Registra un usuario, por ejemplo `usuario_01`.
-2. Inicia sesión correctamente para comprobar el registro `LOGIN_CORRECTO`.
-3. Cierra sesión.
-4. Intenta iniciar sesión tres veces con una contraseña incorrecta utilizando `usuario_01`.
-5. Abre otra terminal dentro de la carpeta del proyecto y ejecuta:
-
-```powershell
-python detector.py
-```
-
-6. Comprueba la alerta generada, el cálculo del MTTD y la simulación del bloqueo.
-7. Actualiza el dashboard para consultar el incidente registrado y su estado.
-8. Repite el procedimiento con otros usuarios para generar escenarios adicionales.
-
-## 📊 Indicadores de seguridad
-
-**MTTD — Mean Time To Detect**
-
-Representa el tiempo transcurrido desde el primer intento fallido registrado hasta la detección del incidente.
-
-**MTTR — Mean Time To Respond**
-
-Representa el tiempo transcurrido desde la detección hasta la acción de respuesta registrada.
-
-Estos indicadores permiten evaluar los tiempos de detección y respuesta ante incidentes de seguridad.
-
-## 📁 Archivos de registro
-
-| Archivo | Descripción |
-|---|---|
-| `eventos.log` | Registra eventos LOGIN_CORRECTO, LOGIN_FALLIDO y LOGIN_BLOQUEADO. |
-| `respuesta.log` | Almacena las acciones de bloqueo simulado. |
-| `usuarios.db` | Base de datos con usuarios, incidentes y bitácora. |
-
-## 🧪 Escenarios de prueba
-
-Para obtener tres escenarios independientes:
-
-- Utiliza tres cuentas diferentes.
-- Realiza tres intentos fallidos por cada cuenta.
-- Ejecuta el detector para procesar los eventos.
-- Registra los resultados de MTTD y MTTR.
-- Calcula los promedios de ambos indicadores.
-
-## 🔐 Consideraciones académicas
-
-- El bloqueo es una simulación local: el detector marca la cuenta como bloqueada en SQLite.
-- El MTTD se calcula desde el primer intento fallido registrado hasta la ejecución del detector.
-- El MTTR se calcula desde la detección hasta la acción de respuesta registrada.
-- Para repetir pruebas, utiliza cuentas distintas o restablece el estado de prueba mediante una copia de seguridad de la base de datos.
-- No publiques claves secretas de desarrollo ni utilices esta aplicación como sistema de producción.
-
-## 🛠️ Tecnologías utilizadas
+### Tecnologías utilizadas
 
 - Python
 - Flask
@@ -129,18 +29,179 @@ Para obtener tres escenarios independientes:
 - HTML5
 - CSS3
 - JavaScript
-- Chart.js
+- Werkzeug
 
-## 👩‍💻 Autor
+## 3. Estructura del proyecto
 
-**Sara Torres**
+```text
+laboratorio-ciberseguridad/
+│
+├── app.py
+├── detector.py
+├── crearDB.py
+├── requirements.txt
+├── README.md
+├── eventos.log
+│
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── registro.html
+│   ├── incidentes.html
+│   └── detalle_incidente.html
+│
+└── static/
+    └── style.css
+```
 
-Proyecto académico de laboratorio de ciberseguridad.
+### Descripción de los archivos principales
 
-**Repositorio:**  
-https://github.com/Saratorres17/laboratorio-ciberseguridad
+| Archivo | Descripción |
+|---|---|
+| `app.py` | Aplicación principal desarrollada con Flask. Gestiona usuarios, autenticación e incidentes. |
+| `detector.py` | Analiza los eventos registrados y detecta múltiples intentos fallidos de inicio de sesión. |
+| `crearDB.py` | Inicializa la base de datos SQLite. |
+| `requirements.txt` | Contiene las dependencias necesarias para ejecutar el proyecto. |
+| `eventos.log` | Almacena los eventos de autenticación. |
+| `templates/` | Contiene las plantillas HTML de la aplicación. |
+| `static/` | Contiene los archivos de estilos CSS. |
+
+## 4. Ejecución del proyecto
+
+### Requisitos previos
+
+Para ejecutar el proyecto se necesita:
+
+- Python 3.10 o superior.
+- Git.
+- Un navegador web.
+- Editor de código, como Visual Studio Code.
+
+### Paso 1. Clonar el repositorio
+
+Abrir una terminal y ejecutar:
+
+```bash
+git clone https://github.com/Saratorres17/laboratorio-ciberseguridad.git
+```
+
+### Paso 2. Ingresar a la carpeta del proyecto
+
+```bash
+cd laboratorio-ciberseguridad
+```
+
+### Paso 3. Crear un entorno virtual
+
+```bash
+python -m venv venv
+```
+
+### Paso 4. Activar el entorno virtual
+
+En Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+En Linux o macOS:
+
+```bash
+source venv/bin/activate
+```
+
+### Paso 5. Instalar las dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+### Paso 6. Inicializar la base de datos
+
+```bash
+python crearDB.py
+```
+
+Este comando crea e inicializa la base de datos SQLite necesaria para el funcionamiento de la aplicación.
+
+### Paso 7. Ejecutar la aplicación
+
+```bash
+python app.py
+```
+
+### Paso 8. Acceder al sistema
+
+Abrir el navegador e ingresar a la siguiente dirección:
+
+```text
+http://127.0.0.1:5000
+```
+
+Desde esta dirección se podrá acceder al sistema, registrar usuarios e iniciar sesión.
+
+## 5. Pruebas del laboratorio
+
+Para comprobar el funcionamiento de la aplicación se deben realizar diferentes escenarios de prueba.
+
+### Escenario 1. Registro e inicio de sesión exitoso
+
+1. Ingresar a la aplicación.
+2. Seleccionar la opción de registro.
+3. Crear un usuario con sus datos correspondientes.
+4. Iniciar sesión utilizando las credenciales correctas.
+5. Comprobar que el acceso sea permitido.
+
+**Resultado esperado:** el sistema permite registrar al usuario y acceder correctamente a la aplicación, almacenando la contraseña mediante un mecanismo de hash.
+
+### Escenario 2. Detección de intentos fallidos
+
+1. Registrar un usuario de prueba.
+2. Intentar iniciar sesión utilizando una contraseña incorrecta.
+3. Repetir el procedimiento hasta completar tres intentos fallidos.
+4. Acceder al panel de incidentes.
+5. Verificar que se haya generado un incidente de seguridad.
+
+**Resultado esperado:** el sistema detecta los intentos fallidos, genera un incidente y bloquea al usuario correspondiente.
+
+### Escenario 3. Atención y resolución del incidente
+
+1. Ingresar al panel de incidentes.
+2. Seleccionar el incidente generado.
+3. Consultar los detalles del evento.
+4. Registrar la información de atención y la acción realizada.
+5. Completar la resolución del incidente.
+6. Verificar el registro de la acción y el cálculo del MTTR.
+
+**Resultado esperado:** el sistema almacena la acción de respuesta y calcula el tiempo de resolución del incidente.
+
+### Métricas de seguridad
+
+**MTTD – Tiempo medio de detección**
+
+Permite medir cuánto tiempo tarda el sistema en identificar un evento de seguridad desde que ocurre.
+
+**MTTR – Tiempo medio de resolución**
+
+Permite medir cuánto tiempo transcurre desde la detección o atención del incidente hasta que se registra su resolución.
+
+### Evidencias esperadas
+
+- Registro de usuarios.
+- Inicio de sesión exitoso.
+- Registro de intentos fallidos en `eventos.log`.
+- Detección y generación de incidentes.
+- Bloqueo del usuario involucrado.
+- Registro de acciones de respuesta.
+- Cálculo de las métricas MTTD y MTTR.
 
 ---
 
-*Laboratorio de Ciberseguridad — Detección y Respuesta ante Incidentes (MTTD / MTTR).*
-<img width="2170" height="725" alt="06bc37cc-baa5-439b-8a5f-201f265672eb" src="https://github.com/user-attachments/assets/68e3203d-36da-4008-a60d-285e1e45f47e" />
+## Repositorio del proyecto
+
+**GitHub:** https://github.com/Saratorres17/laboratorio-ciberseguridad
+
+**Estudiante:** Sara Yamileth Torres Henríquez
+
+**Carné:** TSU-C001
